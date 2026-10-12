@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+rahat_env/
+.venv/
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+.env
+
+# Data (We don't want these huge files on GitHub)
+data/processed/
+data/archive.zip
+data/Dataset_BUSI_with_GT/
+
+# OS Files
+.DS_Store
+Thumbs.db
