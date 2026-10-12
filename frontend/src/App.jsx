@@ -91,7 +91,7 @@ function App() {
     const connect = () => {
       if (!isActive) return;
 
-      socket = new WebSocket('ws://localhost:8000/ws');
+      socket = new WebSocket('wss://rahat-project.onrender.com/ws');
 
       socket.onopen = () => {
         setConnected(true);
