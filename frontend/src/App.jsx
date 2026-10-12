@@ -125,7 +125,7 @@ function App() {
       };
 
       socket.onerror = () => {
-        setConnectionError('Unable to connect. Check that the backend is running on port 8000.');
+        setConnectionError('Waking up the backend server. On the free hosting tier, this can take up to 50 seconds. Please wait...');
       };
 
       socket.onclose = () => {
