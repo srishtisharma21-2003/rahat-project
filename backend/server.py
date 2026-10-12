@@ -9,6 +9,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import cv2
+import httpx
 import numpy as np
 import torch
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
@@ -16,6 +17,22 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from ai.unet_model import TinyUNet
 from simulation.robot_sim import RAHATSimulation
+
+
+async def self_ping_loop():
+    """Periodically ping the deployed health endpoint."""
+    await asyncio.sleep(600)
+    async with httpx.AsyncClient() as client:
+        while True:
+            try:
+                response = await client.get(
+                    "https://rahat-project.onrender.com/health"
+                )
+                response.raise_for_status()
+                print("Self-ping successful.")
+            except httpx.HTTPError as error:
+                print(f"Self-ping failed: {error}")
+            await asyncio.sleep(600)
 
 
 @asynccontextmanager
@@ -37,9 +54,15 @@ async def lifespan(app: FastAPI):
     app.state.sim = sim
     app.state.simulation_lock = asyncio.Lock()
 
+    self_ping_task = asyncio.create_task(self_ping_loop())
     try:
         yield
     finally:
+        self_ping_task.cancel()
+        try:
+            await self_ping_task
+        except asyncio.CancelledError:
+            pass
         sim.close()
 
 
